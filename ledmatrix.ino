@@ -1,11 +1,15 @@
+#include <OneWire.h>
+#include "DallasTemperature.h"
+#include "LedControl.h"
+LedControl lc=LedControl(12,11,10,1); 
+// pin 12 of arduino is connected to the led matrix DIN
+// pin 11 of arduino is connected to the CLK pin
+// pin 10 is connected to CS pin
 
-#include "LedControl.h" //  need the library
-LedControl lc=LedControl(12,11,10,1); // 
- 
-// pin 12 is connected to the MAX7219 pin 1
-// pin 11 is connected to the CLK pin 13
-// pin 10 is connected to LOAD pin 12
-// 1 as we are only using 1 MAX7219
+#define TEMP_SENS_PIN 2 //Onewiresensor is connected to pin 2
+OneWire oneWire(TEMP_SENS_PIN);
+
+DallasTemperature sensors(&oneWire);
 
 void setup()
 {
@@ -13,6 +17,12 @@ void setup()
   lc.shutdown(0,false);// turn off power saving, enables display
   lc.setIntensity(0,15);// sets brightness (0~15 possible values)
   lc.clearDisplay(0);// clear screen
+  
+  
+  Serial.begin(9600);
+  Serial.println("Dallas Temperature IC Control Library Demo");
+  // Start up the library
+  sensors.begin();
 }
 void loop()
 {
