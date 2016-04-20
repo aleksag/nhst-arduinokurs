@@ -1,10 +1,10 @@
 void setup()
 {
   Serial.begin(9600);
-  Serial.println("Dallas Temperature IC Control Library Demo");
+  Serial.println("Setup method!");
 }
 void loop()
 {
-Serial.println("Temperature for Device 1 is: ");
+Serial.println("You're in the loop!");
 delay(250);
 }
