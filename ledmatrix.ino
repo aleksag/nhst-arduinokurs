@@ -20,7 +20,7 @@ void setup()
   
   
   Serial.begin(9600);
-  Serial.println("Dallas Temperature IC Control Library Demo");
+  Serial.println("Setup!");
   // Start up the library
   sensors.begin();
 }
