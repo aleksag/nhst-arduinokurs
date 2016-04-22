@@ -3,32 +3,46 @@
 
 #include <avr/pgmspace.h>
 #include "LedControl.h"
+#include "DallasTemperature.h"
 #include <OneWire.h>
+#define TEMP_SENS_PIN 2 //Onewiresensor is connected to pin 2
 
-const int numDevices = 1;      // number of MAX7219s used
-const long scrollDelay = 75;   // adjust scrolling speed
+LedControl lc=LedControl(12,11,10,1);
+OneWire oneWire(TEMP_SENS_PIN);
+DallasTemperature sensors(&oneWire);
 
-unsigned long bufferLong [14] = {0}; 
-
-LedControl lc=LedControl(12,11,10,numDevices);
 
 void setup(){
-    for (int x=0; x<numDevices; x++){
-        lc.shutdown(x,false);       //The MAX72XX is in power-saving mode on startup
-        lc.setIntensity(x,15);       // Set the brightness to default value
-        lc.clearDisplay(x);         // and clear the display
-    }
+    lc.shutdown(0,false);       //The MAX72XX is in power-saving mode on startup
+    lc.setIntensity(0,15);       // Set the brightness to default value
+    lc.clearDisplay(0);         // and clear the display
     Serial.begin(9600);
+    sensors.begin();
 }
 
+static char outstr[15];
+
 void loop(){
-  displayNumber(2);
+  sensors.requestTemperatures();
+  float temperature = sensors.getTempCByIndex(0);
+  Serial.println("temperature:");
+  Serial.print(temperature);
+  dtostrf(temperature,4, 2, outstr);
+  Serial.println("Digits:");
+  Serial.println(outstr[0]-'0');
+  Serial.println(outstr[1]-'0');
+  Serial.println(outstr[3]-'0');
+  Serial.println(outstr[4]-'0');
+
+  displayNumber(outstr[0]-'0');
   delay(500);
-  displayNumber(3);
+  displayNumber(outstr[1]-'0');
   delay(500);
-  displayNumber(11);
+  displayNumber(12);
   delay(500);
-  displayNumber(10);
+  displayNumber(outstr[3]-'0');
+  delay(500);
+  displayNumber(outstr[4]-'0');
   delay(500);
 }
 
@@ -139,6 +153,14 @@ unsigned char texts[]  = {      //Numeric Font Matrix (Arranged as 7x font data 
     B00000000,
     B00000000,
     B00000000,
+
+    B00000000,  //.
+    B00000000,
+    B00000000,
+    B00000000,
+    B00000000,
+    B00011000,
+    B00011000,
 };
 
 int offset = 1;
